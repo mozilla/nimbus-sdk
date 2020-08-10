@@ -53,12 +53,12 @@ mod tests {
     fn test_targeting() {
         // Here's our valid jexl statement
         let expression_statement =
-            "app_id == '1010' && ( app_version == '4.4' || locale == \"En-US\")";
+            "app_id == '1010' && ( app_version == '4.4' || locale == \"en-US\")";
         // A valid context
         let ctx = AppContext {
             app_id: Some("1010".to_string()),
             app_version: Some("4.4".to_string()),
-            locale: Some("En-US".to_string()),
+            locale: Some("en-US".to_string()),
             debug_tag: None,
             device_manufacturer: None,
             device_model: None,
