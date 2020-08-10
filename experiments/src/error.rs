@@ -21,6 +21,12 @@ pub enum Error {
     EvaluationError,
     #[error("Invalid Expression")]
     InvalidExpression,
+    #[error("Error parsing Url: {0}")]
+    UrlParseError(#[from] url::ParseError),
+    #[error("Error sending request: {0}")]
+    RequestError(#[from] viaduct::Error),
+    #[error("Server responded with an error: {0}")]
+    ResponseError(String),
 }
 
 // This can be replaced with #[from] in the enum definition
