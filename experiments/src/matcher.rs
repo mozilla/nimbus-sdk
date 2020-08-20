@@ -21,10 +21,10 @@ pub struct Matcher {
     pub architecture: Option<String>,
     pub device_manufacturer: Option<String>,
     pub device_model: Option<String>,
+    pub locale: Option<String>,
     pub os: Option<String>,
     pub os_version: Option<String>,
     pub android_sdk_version: Option<String>,
-    pub locale: Option<String>,
     pub debug_tags: Vec<String>,
 }
 
