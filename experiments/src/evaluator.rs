@@ -207,8 +207,7 @@ mod tests {
     #[should_panic(expected = "EvaluationError")]
     fn test_invalid_expression() {
         // This is an invlalid JEXL statement
-        let expression_statement =
-            "This is not a valid JEXL expression";
+        let expression_statement = "This is not a valid JEXL expression";
 
         // A dummy context, we are really only interested in checking the
         // expression in this test.
