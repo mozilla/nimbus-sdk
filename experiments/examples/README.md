@@ -28,4 +28,4 @@ You can set a config file using the `-c` option, which can include the following
 
 If you would like to generate a UUID for testing purposes, you can use the `gen_uuid` subcommand. This takes a number argument, and will attempt to generate a `uuid` that is able to enroll that the given number of experiments. 
 
-Note on the `gen_uuid` subcommand, the higher the number the longer it will take. It also depends on the bucket configuration of he buckets retrieved from the server.
+Note on the `gen_uuid` subcommand, the higher the number the longer it will take. It also depends on the bucket configuration of the buckets retrieved from the server.
