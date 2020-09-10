@@ -20,3 +20,7 @@ ext.description = buildconfig.description
 ext.version = buildconfig.libraryVersion
 ext.groupId = buildconfig.groupId
 ext.artifactId = buildconfig.artifactId
+ext.libUrl = buildconfig.libUrl
+ext.libVcsUrl = buildconfig.libVcsUrl
+ext.libLicense = buildconfig.libLicense
+ext.libLicenseUrl = buildconfig.libLicenseUrl
