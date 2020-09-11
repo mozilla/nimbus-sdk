@@ -194,7 +194,12 @@ afterEvaluate {
             productFlavor += "${it.name.capitalize()}"
         }
         def buildType = "${variant.buildType.name.capitalize()}"
-        tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
+        // tasks["merge${productFlavor}${buildType}JniLibFolders"].dependsOn(tasks["cargoBuild"])
+
+        tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
+
+        // For unit tests.
+        tasks["process${productFlavor}${buildType}UnitTestJavaRes"].dependsOn(tasks["cargoBuild"])
     }
 }
 
@@ -213,7 +218,7 @@ android.libraryVariants.all { variant ->
 }
 
 allprojects {
-    group = "uniffi"
+    group = "uniffi.nimbus"
     apply plugin: 'digital.wup.android-maven-publish'
 
     // This allows to invoke Gradle like `./gradlew publishToRootProjectBuildDir` (equivalent to
