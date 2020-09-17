@@ -122,6 +122,10 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    sourceSets {
+        test.jniLibs.srcDirs += "$buildDir/rustJniLibs/desktop"
+    }
 }
 
 allprojects {
@@ -173,7 +177,7 @@ cargo {
     apiLevel = 29
 
     // Where Cargo writes its outputs.
-    targetDirectory = '../target'
+    targetDirectory = '../experiments/target'
 
     // This is the name of the library that the kotlin code
     // *must* use to import the native code
