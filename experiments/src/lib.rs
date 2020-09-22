@@ -151,21 +151,12 @@ fn default_buckets() -> u32 {
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BucketConfig {
-    pub randomization_unit: RandomizationUnit,
+    pub randomization_unit: Uuid,
     pub namespace: String,
     pub start: u32,
     pub count: u32,
     #[serde(default = "default_buckets")]
     pub total: u32,
-}
-
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum RandomizationUnit {
-    ClientId,
-    NormandyId,
-    #[serde(rename = "userId")]
-    UserId,
 }
 
 include!(concat!(env!("OUT_DIR"), "/nimbus.uniffi.rs"));

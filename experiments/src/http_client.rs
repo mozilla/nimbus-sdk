@@ -102,14 +102,15 @@ impl SettingsClient for Client {
 mod tests {
     use super::*;
     use crate::{
-        Branch, BucketConfig, ExperimentArguments, FeatureConfig, Group, RandomizationUnit,
+        uuid::generate_uuid, Branch, BucketConfig, ExperimentArguments, FeatureConfig, Group,
     };
     use mockito::mock;
 
     #[test]
     fn test_get_experiments_from_schema() {
         viaduct_reqwest::use_reqwest_backend();
-        let body = r#"
+        let uid = generate_uuid(None);
+        let body = serde_json::json!(
         { "data":
         [
             {
@@ -123,7 +124,7 @@ mod tests {
                     "isEnrollmentPaused": true,
                     "active": true,
                     "bucketConfig": {
-                        "randomizationUnit": "normandy_id",
+                        "randomizationUnit": uid,
                         "namespace": "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77",
                         "start": 0,
                         "count": 2000,
@@ -155,7 +156,7 @@ mod tests {
                     "isEnrollmentPaused": true,
                     "active": true,
                     "bucketConfig": {
-                        "randomizationUnit": "normandy_id",
+                        "randomizationUnit": uid,
                         "namespace": "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77",
                         "start": 0,
                         "count": 2000,
@@ -174,13 +175,12 @@ mod tests {
                 }
             }
 
-        ]}
-          "#;
+        ]});
         let m = mock(
             "GET",
             "/buckets/main/collections/messaging-experiments/records",
         )
-        .with_body(body)
+        .with_body(body.to_string())
         .with_status(200)
         .with_header("content-type", "application/json")
         .create();
@@ -205,7 +205,7 @@ mod tests {
                     is_enrollment_paused: true,
                     active: true,
                     bucket_config: BucketConfig {
-                        randomization_unit: RandomizationUnit::NormandyId,
+                        randomization_unit: uid,
                         namespace: "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77".to_string(),
                         start: 0,
                         count: 2000,

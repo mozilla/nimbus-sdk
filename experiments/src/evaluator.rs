@@ -128,7 +128,7 @@ pub(crate) fn targeting(expression_statement: &str, ctx: AppContext) -> Result<b
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{BucketConfig, ExperimentArguments, FeatureConfig, Group, RandomizationUnit};
+    use crate::{uuid::generate_uuid, BucketConfig, ExperimentArguments, FeatureConfig, Group};
     #[test]
     fn test_targeting() {
         // Here's our valid jexl statement
@@ -270,7 +270,7 @@ mod tests {
                 active: true,
                 is_enrollment_paused: false,
                 bucket_config: BucketConfig {
-                    randomization_unit: RandomizationUnit::NormandyId,
+                    randomization_unit: generate_uuid(None),
                     namespace: "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77".to_string(),
                     start: 0,
                     count: 2000,
@@ -288,7 +288,7 @@ mod tests {
         };
         let mut experiment2 = experiment1.clone();
         experiment2.arguments.bucket_config = BucketConfig {
-            randomization_unit: RandomizationUnit::NormandyId,
+            randomization_unit: generate_uuid(None),
             namespace:
                 "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77"
                     .to_string(),
