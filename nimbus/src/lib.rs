@@ -23,7 +23,7 @@ use std::path::Path;
 
 const DEFAULT_TOTAL_BUCKETS: u32 = 10000;
 
-/// Experiments is the main struct representing the experiments state
+/// Nimbus is the main struct representing the experiments state
 /// It should hold all the information needed to communicate a specific user's
 /// experimentation status
 #[derive(Debug, Clone)]
