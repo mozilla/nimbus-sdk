@@ -27,7 +27,7 @@ const DEFAULT_TOTAL_BUCKETS: u32 = 10000;
 /// It should hold all the information needed to communicate a specific user's
 /// experimentation status
 #[derive(Debug, Clone)]
-pub struct Experiments {
+pub struct Nimbus {
     experiments: Vec<Experiment>,
     enrolled_experiments: Vec<EnrolledExperiment>,
     app_context: AppContext,
@@ -42,7 +42,7 @@ pub struct EnrolledExperiment {
     pub branch_slug: String,
 }
 
-impl Experiments {
+impl Nimbus {
     pub fn new<P: AsRef<Path>>(
         collection_name: String,
         app_context: AppContext,
