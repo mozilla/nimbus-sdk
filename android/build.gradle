@@ -3,13 +3,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'idea'
 apply plugin: 'org.mozilla.rust-android-gradle.rust-android'
-
+apply plugin: 'com.google.protobuf'
 
 buildscript {
     ext.kotlin_version = '1.3.71'
     ext.jna_version = '5.6.0'
     ext.android_gradle_plugin_version = '3.6.0'
-    ext.android_components_version = '47.0.0'
+    ext.android_components_version = '56.0.0'
+    ext.mozilla_appservices_version = '63.0.0'
 
     ext.build = [
             ndkVersion: "21.3.6528147", // Keep it in sync in TC Dockerfile.
@@ -35,6 +36,9 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$android_gradle_plugin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // Viaduct initialization
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
 
         // Publish.
         classpath 'digital.wup:android-maven-publish:3.6.2'
@@ -67,8 +71,12 @@ configurations {
 }
 
 dependencies {
+    api "org.mozilla.components:concept-fetch:$android_components_version"
     jnaForTest "net.java.dev.jna:jna:$jna_version@jar"
     implementation "net.java.dev.jna:jna:$jna_version@aar"
+    implementation "com.google.protobuf:protobuf-javalite:3.11.4"
+    implementation "org.mozilla.appservices:native-support:${mozilla_appservices_version}"
+    implementation "org.mozilla.appservices:httpconfig:${mozilla_appservices_version}"
 }
 
 android {
@@ -218,6 +226,7 @@ android.libraryVariants.all { variant ->
     }
     variant.javaCompileProvider.get().dependsOn(t)
     def sourceSet = variant.sourceSets.find { it.name == variant.name }
+    sourceSet.java.srcDir new File("${project.projectDir}/src/main/java")
     sourceSet.java.srcDir new File(buildDir, "generated/source/uniffi/${variant.name}/java")
     // XXX: I've been trying to make this work but I can't, so the compiled bindings will show as "regular sources" in Android Studio.
     idea.module.generatedSourceDirs += file("${buildDir}/generated/source/uniffi/${variant.name}/java/uniffi")
