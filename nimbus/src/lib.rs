@@ -63,7 +63,13 @@ impl NimbusClient {
     }
 
     pub fn get_experiment_branch(&self, _slug: String) -> Option<String> {
-        unimplemented!();
+        let enrolled_experiment = self.enrolled_experiments
+            .iter()
+            .find(|e| e.slug == _slug);
+        match enrolled_experiment {
+            Some(e) => { Some(e.branch_slug.clone()) }
+            None => { None }
+        }
     }
 
     pub fn get_active_experiments(&self) -> Vec<EnrolledExperiment> {
