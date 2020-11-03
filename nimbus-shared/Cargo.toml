@@ -1,0 +1,13 @@
+[package]
+name = "nimbus_shared"
+version = "1.0.0"
+authors = ["Kate Hudson <k88hudson@gmail.com>"]
+edition = "2018"
+include = ["src/**/*.rs"]
+
+[dependencies]
+schemars = "0.8.0"
+serde = "1"
+
+[workspace]
+members = ["generate"]
