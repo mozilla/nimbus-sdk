@@ -65,11 +65,10 @@ interface NimbusClient {
 
     // Getter and setter for user's participation in all experiments.
     // Possible values are:
-    // * `true`: user has opted in.
-    // * `false`: user has opted out
-    // * null: user has not made a choice.
+    // * `true`: the user will not enroll in new experiments, and opt out of all exisitng ones.
+    // * `false`: experiments proceed as usual.
     [Throws=Error]
-    boolean? get_global_user_participation();
+    boolean get_global_user_participation();
 
     [Throws=Error]
     void set_global_user_participation(boolean opt_in);
