@@ -1,3 +1,7 @@
+# Unreleased changes
+
+Unreleased changes go here.
+
 # 1.0.0 (_2020-10-27_)
 
 ## General
@@ -6,7 +10,7 @@
 
 Addition of CHANGELOG.md
 
-The following are features that have been implemented as part of prototyping and initial development at some point prior to adding the changelog and stricter versioning:
+The following are features that have been implemented as part of prototyping and initial development at some point prior to adding the changelog:
 
 - Schema definition per the [shared schema repo](https://github.com/mozilla/nimbus-shared)
 - Enrollment
