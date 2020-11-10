@@ -13,8 +13,6 @@
 //!
 //! But the simple subset implemented here meets our needs for now.
 
-use std::str::FromStr;
-
 use crate::config::RemoteSettingsConfig;
 use crate::error::{Error, Result};
 use crate::{Experiment, SettingsClient, SCHEMA_VERSION};
@@ -78,9 +76,11 @@ impl SettingsClient for Client {
                 }
             };
             let schema_maj_version = exp_schema_version.split(".").next().unwrap_or("");
-            let schema_version: i32 = FromStr::from_str(schema_maj_version).unwrap();
+            // While "0" is a valid schema version, we have already passed that so reserving zero as
+            // a special value here in order to avoid a panic, and just ignore the experiment.
+            let schema_version: u32 = schema_maj_version.parse().unwrap_or(0);
             if schema_version != SCHEMA_VERSION {
-                log::warn!(
+                log::info!(
                     "Schema version mismatch: Expected version {}, discarding experiment with version {}",
                     SCHEMA_VERSION, schema_version
                 );
@@ -119,7 +119,7 @@ mod tests {
             r#"
         {{ "data": [
             {{
-                "schemaVersion": "{}.0.0",
+                "schemaVersion": "{current_version}.0.0",
                 "slug": "mobile-a-a-example",
                 "application": "reference-browser",
                 "userFacingName": "Mobile A/A Example",
@@ -149,7 +149,7 @@ mod tests {
                 ]
             }},
             {{
-                "schemaVersion": "{}.0.0",
+                "schemaVersion": "{newer_version}.0.0",
                 "slug": "mobile-a-a-example",
                 "application": "reference-browser",
                 "userFacingName": "Mobile A/A Example",
@@ -179,8 +179,8 @@ mod tests {
                 ]
             }}
         ]}}"#,
-            SCHEMA_VERSION,
-            SCHEMA_VERSION + 1
+            current_version = SCHEMA_VERSION,
+            newer_version = SCHEMA_VERSION + 1
         );
         let m = mock(
             "GET",
@@ -203,7 +203,7 @@ mod tests {
         assert_eq!(
             exp.clone(),
             Experiment {
-                schema_version: "1.0.0".to_string(),
+                schema_version: format!("{}.0.0", SCHEMA_VERSION),
                 slug: "mobile-a-a-example".to_string(),
                 application: "reference-browser".to_string(),
                 user_facing_name: "Mobile A/A Example".to_string(),
