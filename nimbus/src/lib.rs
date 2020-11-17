@@ -9,6 +9,7 @@ pub use error::{Error, Result};
 mod client;
 mod config;
 mod matcher;
+mod metrics;
 mod persistence;
 mod sampling;
 #[cfg(debug_assertions)]
@@ -50,6 +51,8 @@ impl NimbusClient {
         config: Option<RemoteSettingsConfig>,
         available_randomization_units: AvailableRandomizationUnits,
     ) -> Result<Self> {
+        log::info!("SETTING A RUST METRIC");
+        metrics::rust_was_here.set(true);
         let settings_client = create_client(config)?;
         Ok(Self {
             settings_client,
@@ -107,11 +110,15 @@ impl NimbusClient {
     }
 
     pub fn get_active_experiments(&self) -> Result<Vec<EnrolledExperiment>> {
+        log::info!("SETTING A RUST METRIC GETACTIVE");
+        metrics::rust_was_here.set(true);
         self.maybe_initial_experiment_fetch()?;
         get_enrollments(self.db()?)
     }
 
     pub fn get_all_experiments(&self) -> Result<Vec<Experiment>> {
+        log::info!("SETTING A RUST METRIC GETALL");
+        metrics::rust_was_here.set(true);
         self.maybe_initial_experiment_fetch()?;
         self.db()?.collect_all(StoreId::Experiments)
     }
