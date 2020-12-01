@@ -46,9 +46,7 @@ pub fn evaluate_enrollment(
     exp: &Experiment,
 ) -> Result<ExperimentEnrollment> {
     // Verify the application-id matches the application being targeted
-    // by the experiment.  This could also be done via the targeting
-    // but this is a short-circuit of sorts since the application field
-    // is not optional.
+    // by the experiment.
     if !exp.application.eq(&app_context.app_id) {
         return Ok(ExperimentEnrollment {
             slug: exp.slug.clone(),
@@ -359,16 +357,7 @@ mod tests {
         // Application context for matching exp3
         let context = AppContext {
             app_id: "org.example.app".to_string(),
-            app_version: None,
-            app_build: None,
-            architecture: None,
-            device_manufacturer: None,
-            device_model: None,
-            locale: None,
-            os: None,
-            os_version: None,
-            android_sdk_version: None,
-            debug_tag: None,
+            ..Default::default()
         };
 
         let enrollment =

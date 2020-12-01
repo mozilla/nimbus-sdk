@@ -422,16 +422,7 @@ mod tests {
         let aru = Default::default();
         let app_context = AppContext {
             app_id: "fenix".to_string(),
-            app_version: None,
-            app_build: None,
-            architecture: None,
-            device_manufacturer: None,
-            device_model: None,
-            locale: None,
-            os: None,
-            os_version: None,
-            android_sdk_version: None,
-            debug_tag: None,
+            ..Default::default()
         };
         assert_eq!(get_enrollments(&db)?.len(), 0);
         let exps = get_test_experiments();
@@ -465,16 +456,7 @@ mod tests {
         let aru = Default::default();
         let app_context = AppContext {
             app_id: "fenix".to_string(),
-            app_version: None,
-            app_build: None,
-            architecture: None,
-            device_manufacturer: None,
-            device_model: None,
-            locale: None,
-            os: None,
-            os_version: None,
-            android_sdk_version: None,
-            debug_tag: None,
+            ..Default::default()
         };
         assert_eq!(get_enrollments(&db)?.len(), 0);
         let exps = get_test_experiments();

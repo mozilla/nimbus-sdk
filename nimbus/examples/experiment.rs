@@ -328,7 +328,6 @@ fn main() -> Result<()> {
                     .get_all_experiments()
                     .expect("can't fetch experiments!?")
                 {
-                    println!("{}", exp.slug.clone());
                     if exp.slug == experiment_id {
                         return exp;
                     }
