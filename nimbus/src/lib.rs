@@ -254,6 +254,7 @@ pub struct BucketConfig {
 pub enum RandomizationUnit {
     NimbusId,
     ClientId,
+    NormandyId,
 }
 
 impl Default for RandomizationUnit {
@@ -265,6 +266,7 @@ impl Default for RandomizationUnit {
 #[derive(Default)]
 pub struct AvailableRandomizationUnits {
     pub client_id: Option<String>,
+    pub normandy_id: Option<String>,
     dummy: i8, // See comments in nimbus.idl for why this hacky item exists.
 }
 
@@ -274,6 +276,15 @@ impl AvailableRandomizationUnits {
     pub fn with_client_id(client_id: &str) -> Self {
         Self {
             client_id: Some(client_id.to_string()),
+            normandy_id: None,
+            dummy: 0,
+        }
+    }
+
+    pub fn with_normandy_id(normandy_id: &str) -> Self {
+        Self {
+            client_id: None,
+            normandy_id: Some(normandy_id.to_string()),
             dummy: 0,
         }
     }
@@ -286,6 +297,7 @@ impl AvailableRandomizationUnits {
         match wanted {
             RandomizationUnit::NimbusId => Some(nimbus_id),
             RandomizationUnit::ClientId => self.client_id.as_deref(),
+            RandomizationUnit::NormandyId => self.normandy_id.as_deref(),
         }
     }
 }

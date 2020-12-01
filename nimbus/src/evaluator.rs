@@ -323,6 +323,17 @@ mod tests {
             total: 10000,
         };
         experiment2.slug = "TEST_EXP2".to_string();
+        let mut experiment3 = experiment1.clone();
+        experiment3.bucket_config = BucketConfig {
+            randomization_unit: RandomizationUnit::NormandyId,
+            namespace:
+                "bug-1637316-message-aboutwelcome-pull-factor-reinforcement-76-rel-release-76-77"
+                    .to_string(),
+            start: 9000,
+            count: 1000,
+            total: 10000,
+        };
+        experiment3.slug = "TEST_EXP3".to_string();
         // We will not match EXP_2 because we don't have the necessary randomization unit.
         let available_randomization_units = Default::default();
         // 299eed1e-be6d-457d-9e53-da7b1a03f10d uuid fits in start: 0, count: 2000, total: 10000 with the example namespace, to the treatment-variation-b branch
@@ -357,6 +368,20 @@ mod tests {
             &available_randomization_units,
             &Default::default(),
             &experiment2,
+        )
+        .unwrap();
+        assert!(
+            matches!(enrollment.status, EnrollmentStatus::Enrolled { reason: EnrolledReason::Qualified, .. })
+        );
+
+        // Fits because of the normandy_id.
+        let id = uuid::Uuid::parse_str("9d275791-3f31-4549-b30c-e32c750e4787").unwrap();
+        let available_randomization_units = AvailableRandomizationUnits::with_normandy_id(&id.to_string());
+        let enrollment = evaluate_enrollment(
+            &id,
+            &available_randomization_units,
+            &Default::default(),
+            &experiment3,
         )
         .unwrap();
         assert!(

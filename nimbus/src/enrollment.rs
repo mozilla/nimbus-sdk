@@ -513,4 +513,54 @@ mod tests {
         // assert_eq!(enrollments.len(), 1);
         Ok(())
     }
+
+    #[test]
+    fn test_desktop_schema_integration() -> Result<()> {
+        let experiment: serde_json::Value = json!({
+            "schemaVersion": "1.0.0",
+            "slug": "secure-bronze",
+            "endDate": null,
+            "branches":[
+            {"slug": "control", "ratio": 1},
+            {"slug": "treatment","ratio":1}
+            ],
+            "probeSets":[],
+            "startDate":null,
+            "application":"firefox",
+            "bucketConfig":{
+                // Also enroll everyone.
+                "count":10_000,
+                "start":0,
+                "total":10_000,
+                "namespace":"secure-silver",
+                "randomizationUnit":"normandy_id"
+            },
+            "userFacingName":"3rd test experiment",
+            "referenceBranch":"control",
+            "isEnrollmentPaused":false,
+            "proposedEnrollment":7,
+            "userFacingDescription":"3rd test experiment.",
+            "id":"secure-bronze",
+            "last_modified":1_602_197_324_372i64
+        });
+        let _ = env_logger::try_init();
+        let tmp_dir = TempDir::new("test_enrollments")?;
+        let db = Database::new(&tmp_dir)?;
+        let normandy_id = Uuid::new_v4();
+        let aru = AvailableRandomizationUnits::with_normandy_id("foo");
+        assert_eq!(get_enrollments(&db)?.len(), 0);
+        let mut writer = db.write()?;
+        db.get_store(StoreId::Experiments).put(
+            &mut writer,
+            experiment.get("slug").unwrap().as_str().unwrap(),
+            &experiment,
+        )?;
+
+        update_enrollments(&db, &mut writer, &normandy_id, &aru, &Default::default())?;
+        writer.commit()?;
+
+        let enrollments = get_enrollments(&db)?;
+        assert_eq!(enrollments.len(), 1);
+        Ok(())
+    }
 }
