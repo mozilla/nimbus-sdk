@@ -376,7 +376,8 @@ mod tests {
 
         // Fits because of the normandy_id.
         let id = uuid::Uuid::parse_str("9d275791-3f31-4549-b30c-e32c750e4787").unwrap();
-        let available_randomization_units = AvailableRandomizationUnits::with_normandy_id(&id.to_string());
+        let available_randomization_units =
+            AvailableRandomizationUnits::with_normandy_id(&id.to_string());
         let enrollment = evaluate_enrollment(
             &id,
             &available_randomization_units,
