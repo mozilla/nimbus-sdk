@@ -131,9 +131,10 @@ pub fn evaluate_enrollment(
 /// An error could occur if something goes wrong while sampling the ratios
 fn choose_branch<'a>(slug: &str, branches: &'a [Branch], id: &str) -> Result<&'a Branch> {
     let ratios = branches.iter().map(|b| b.ratio).collect::<Vec<_>>();
-    // Note: The "experiment-manager" here comes from https://searchfox.org/mozilla-central/source/toolkit/components/messaging-system/experiments/ExperimentManager.jsm#421
+    // Note: The "experiment-manager" here comes from
+    // https://searchfox.org/mozilla-central/rev/1843375acbbca68127713e402be222350ac99301/toolkit/components/messaging-system/experiments/ExperimentManager.jsm#469
     // TODO: Change it to be something more related to the SDK if it is needed
-    let input = format!("{:}-{:}-{:}-branch", "experiment-manager", id, slug);
+    let input = format!("{:}-{:}-{:}-branch", "experimentmanager", id, slug);
     let index = sampling::ratio_sample(&input, &ratios)?;
     branches.get(index).ok_or(Error::OutOfBoundsError)
 }
