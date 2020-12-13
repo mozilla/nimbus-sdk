@@ -58,6 +58,7 @@ pub enum StoreId {
     Experiments,
     Enrollments,
     Meta,
+    Updates,
 }
 
 /// A wrapper for an Rkv store. Implemented to allow any value which supports
@@ -140,6 +141,7 @@ pub struct Database {
     meta_store: SingleStore,
     experiment_store: SingleStore,
     enrollment_store: SingleStore,
+    updates_store: SingleStore,
 }
 
 impl Database {
@@ -152,11 +154,13 @@ impl Database {
         let meta_store = rkv.open_single("meta", StoreOptions::create())?;
         let experiment_store = rkv.open_single("experiments", StoreOptions::create())?;
         let enrollment_store = rkv.open_single("enrollments", StoreOptions::create())?;
+        let updates_store = rkv.open_single("updates", StoreOptions::create())?;
         let db = Self {
             rkv,
             meta_store: SingleStore::new(meta_store),
             experiment_store: SingleStore::new(experiment_store),
             enrollment_store: SingleStore::new(enrollment_store),
+            updates_store: SingleStore::new(updates_store),
         };
         db.maybe_upgrade()?;
         Ok(db)
@@ -195,6 +199,7 @@ impl Database {
             StoreId::Meta => &self.meta_store,
             StoreId::Experiments => &self.experiment_store,
             StoreId::Enrollments => &self.enrollment_store,
+            StoreId::Updates => &self.updates_store,
         }
     }
 

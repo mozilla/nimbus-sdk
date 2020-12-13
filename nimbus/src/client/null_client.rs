@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use crate::error::Result;
-use crate::{Experiment, SettingsClient};
+use crate::{Experiments, SettingsClient};
 
 /// This is a client for use when no server is provided.
 /// Its primary use is for non-Mozilla forks of apps that are not using their
@@ -20,8 +20,8 @@ impl SettingsClient for NullClient {
     fn get_experiments_metadata(&self) -> Result<String> {
         unimplemented!();
     }
-    fn get_experiments(&mut self) -> Result<Vec<Experiment>> {
-        Ok(vec![])
+    fn fetch_experiments(&mut self) -> Result<Experiments> {
+        Ok(Default::default())
     }
 }
 
@@ -36,7 +36,8 @@ fn test_null_client() -> Result<()> {
     let tmp_dir = TempDir::new("test_null_client-test_null")?;
 
     let aru = Default::default();
-    let client = NimbusClient::new(Default::default(), tmp_dir.path(), None, aru)?;
+    let mut client = NimbusClient::new(Default::default(), tmp_dir.path(), None, aru)?;
+    client.update_experiments()?;
 
     let experiments = client.get_all_experiments()?;
     assert_eq!(experiments.len(), 0);

@@ -7,8 +7,8 @@
 //! for tests.
 
 use crate::error::Result;
-use crate::Experiment;
 use crate::SettingsClient;
+use crate::{Experiment, Experiments};
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::BufReader;
@@ -31,7 +31,7 @@ impl SettingsClient for FileSystemClient {
         unimplemented!();
     }
 
-    fn get_experiments(&mut self) -> Result<Vec<Experiment>> {
+    fn fetch_experiments(&mut self) -> Result<Experiments> {
         log::info!("reading experiments in {}", self.path.display());
         let mut res = Vec::new();
         // Skip directories and non .json files (eg, READMEs)
@@ -56,6 +56,6 @@ impl SettingsClient for FileSystemClient {
                 }
             }
         }
-        Ok(res)
+        Ok(Experiments::new(res))
     }
 }

@@ -17,7 +17,8 @@ use std::time::{Duration, Instant};
 
 use crate::config::RemoteSettingsConfig;
 use crate::error::{Error, Result};
-use crate::{Experiment, SettingsClient, SCHEMA_VERSION};
+use crate::{Experiment, Experiments, SettingsClient, SCHEMA_VERSION};
+use std::convert::TryFrom;
 use url::Url;
 use viaduct::{status_codes, Request, Response};
 
@@ -109,7 +110,7 @@ impl SettingsClient for Client {
         unimplemented!();
     }
 
-    fn get_experiments(&mut self) -> Result<Vec<Experiment>> {
+    fn fetch_experiments(&mut self) -> Result<Experiments> {
         let path = format!(
             "buckets/{}/collections/{}/records",
             &self.bucket_name, &self.collection_name
@@ -120,7 +121,15 @@ impl SettingsClient for Client {
         // to allow us to deserialize each experiment individually,
         // omitting any malformed experiments
         let resp = self.make_request(req)?.json::<serde_json::Value>()?;
-        let data = resp.get("data").ok_or(Error::InvalidExperimentResponse)?;
+        let res = Experiments::try_from(resp)?;
+        Ok(res)
+    }
+}
+
+impl TryFrom<serde_json::Value> for Experiments {
+    type Error = crate::error::Error;
+    fn try_from(value: serde_json::Value) -> Result<Self> {
+        let data = value.get("data").ok_or(Error::InvalidExperimentResponse)?;
         let mut res = Vec::new();
         for exp in data.as_array().ok_or(Error::InvalidExperimentResponse)? {
             // Validate the schema major version matches the supported version
@@ -157,7 +166,7 @@ impl SettingsClient for Client {
                 }
             }
         }
-        Ok(res)
+        Ok(Self::new(res))
     }
 }
 
@@ -238,7 +247,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_experiments_from_schema() {
+    fn test_fetch_experiments_from_schema() {
         viaduct_reqwest::use_reqwest_backend();
         // There are two experiments defined here, one has a "newer" schema version
         // in order to test filtering of unsupported schema versions.
@@ -256,7 +265,8 @@ mod tests {
             collection_name: "messaging-experiments".to_string(),
         };
         let mut http_client = Client::new(config).unwrap();
-        let resp = http_client.get_experiments().unwrap();
+        let resp = http_client.fetch_experiments().unwrap();
+        let resp = resp.get_experiments();
         m.expect(1).assert();
         assert_eq!(resp.len(), 1);
         let exp = &resp[0];
@@ -317,8 +327,8 @@ mod tests {
             collection_name: "messaging-experiments".to_string(),
         };
         let mut http_client = Client::new(config).unwrap();
-        assert!(http_client.get_experiments().is_ok());
-        let second_request = http_client.get_experiments();
+        assert!(http_client.fetch_experiments().is_ok());
+        let second_request = http_client.fetch_experiments();
         assert!(matches!(second_request, Err(Error::BackoffError(_))));
         m.expect(1).assert();
     }
@@ -340,8 +350,8 @@ mod tests {
             collection_name: "messaging-experiments".to_string(),
         };
         let mut http_client = Client::new(config).unwrap();
-        assert!(http_client.get_experiments().is_err());
-        let second_request = http_client.get_experiments();
+        assert!(http_client.fetch_experiments().is_err());
+        let second_request = http_client.fetch_experiments();
         assert!(matches!(second_request, Err(Error::BackoffError(_))));
         m.expect(1).assert();
     }
@@ -369,7 +379,7 @@ mod tests {
             duration: Duration::from_secs(30),
         };
         assert!(matches!(
-            http_client.get_experiments(),
+            http_client.fetch_experiments(),
             Err(Error::BackoffError(_))
         ));
         // Then do the actual test.
@@ -377,7 +387,7 @@ mod tests {
             observed_at: Instant::now() - Duration::from_secs(31),
             duration: Duration::from_secs(30),
         };
-        assert!(http_client.get_experiments().is_ok());
+        assert!(http_client.fetch_experiments().is_ok());
         m.expect(1).assert();
     }
 }
