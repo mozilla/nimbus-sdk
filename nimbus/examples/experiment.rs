@@ -199,7 +199,8 @@ fn main() -> Result<()> {
     let mut nimbus_client = NimbusClient::new(context, "", Some(config), aru)?;
 
     // Explicitly update experiments at least once for init purposes
-    nimbus_client.update_experiments()?;
+    nimbus_client.fetch_experiments()?;
+    nimbus_client.apply_pending_experiments()?;
 
     // We match against the subcommands
     match matches.subcommand() {
@@ -226,7 +227,8 @@ fn main() -> Result<()> {
         ("update-experiments", _) => {
             println!("======================================");
             println!("Updating experiments");
-            nimbus_client.update_experiments()?;
+            nimbus_client.fetch_experiments()?;
+            nimbus_client.apply_pending_experiments()?;
         }
         ("opt-in", Some(matches)) => {
             println!("======================================");

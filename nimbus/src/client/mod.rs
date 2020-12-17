@@ -6,12 +6,14 @@ mod fs_client;
 mod http_client;
 mod null_client;
 use crate::error::{Error, Result};
-use crate::Experiments;
+use crate::Experiment;
 use crate::RemoteSettingsConfig;
 use fs_client::FileSystemClient;
 use http_client::Client;
 use null_client::NullClient;
 use url::Url;
+
+pub use http_client::parse_experiments;
 
 pub(crate) fn create_client(
     config: Option<RemoteSettingsConfig>,
@@ -43,5 +45,5 @@ pub(crate) fn create_client(
 // The trait used to fetch experiments.
 pub(crate) trait SettingsClient {
     fn get_experiments_metadata(&self) -> Result<String>;
-    fn fetch_experiments(&mut self) -> Result<Experiments>;
+    fn fetch_experiments(&mut self) -> Result<Vec<Experiment>>;
 }

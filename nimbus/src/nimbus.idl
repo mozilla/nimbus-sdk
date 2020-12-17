@@ -54,7 +54,7 @@ enum Error {
     "InvalidPersistedData", "RkvError", "IOError",
     "JSONError", "EvaluationError", "InvalidExpression", "InvalidFraction",
     "TryFromSliceError", "EmptyRatiosError", "OutOfBoundsError","UrlParsingError",
-    "RequestError", "ResponseError", "UuidError", "InvalidExperimentResponse",
+    "RequestError", "ResponseError", "UuidError", "InvalidExperimentFormat",
     "InvalidPath", "InternalError", "NoSuchExperiment", "NoSuchBranch", "BackoffError"
 };
 
@@ -104,7 +104,7 @@ interface NimbusClient {
     // After calling this, the list of active experiments might change
     // (there might be new experiments, or old experiments might have expired).
     [Throws=Error]
-    sequence<EnrollmentChangeEvent> apply_pending_updates();
+    sequence<EnrollmentChangeEvent> apply_pending_experiments();
 
     // A convenience method for apps to set the experiments from a local source
     // for either testing, or before the first fetch has finished.

@@ -7,11 +7,11 @@
 
 use crate::error::Result;
 use crate::persistence::{Database, StoreId, Writer};
-use crate::Experiments;
+use crate::Experiment;
 
 const KEY_PENDING_UPDATES: &str = "pending-experiment-updates";
 
-pub fn stash_pending_updates(db: &Database, experiments: Experiments) -> Result<()> {
+pub fn write_pending_experiments(db: &Database, experiments: Vec<Experiment>) -> Result<()> {
     let mut writer = db.write()?;
     db.get_store(StoreId::Updates)
         .put(&mut writer, KEY_PENDING_UPDATES, &experiments)?;
@@ -19,11 +19,14 @@ pub fn stash_pending_updates(db: &Database, experiments: Experiments) -> Result<
     Ok(())
 }
 
-pub fn pop_pending_updates(db: &Database, writer: &mut Writer) -> Result<Option<Experiments>> {
+pub fn read_and_remove_pending_experiments(
+    db: &Database,
+    writer: &mut Writer,
+) -> Result<Option<Vec<Experiment>>> {
     let store = db.get_store(StoreId::Updates);
-    let experiments = store.get::<Experiments>(writer, KEY_PENDING_UPDATES)?;
+    let experiments = store.get::<Vec<Experiment>>(writer, KEY_PENDING_UPDATES)?;
 
-    if let Some(_) = experiments {
+    if experiments.is_some() {
         store.clear(writer)?;
     }
 
@@ -32,7 +35,7 @@ pub fn pop_pending_updates(db: &Database, writer: &mut Writer) -> Result<Option<
 
 #[cfg(feature = "rkv-safe-mode")]
 #[test]
-fn test_stash_pop() -> Result<()> {
+fn test_reading_writing_and_removing_experiments() -> Result<()> {
     use crate::Experiment;
     use tempdir::TempDir;
 
@@ -42,30 +45,28 @@ fn test_stash_pop() -> Result<()> {
     let _ = env_logger::try_init();
 
     let test_experiment: Experiment = Default::default();
-    let fetched = Experiments::new(vec![test_experiment]);
+    let fetched = vec![test_experiment];
 
     // simulated fetch by constructing a dummy payload of 1 experiment.
-    assert_eq!(fetched.get_experiments().len(), 1);
+    assert_eq!(fetched.len(), 1);
 
-    stash_pending_updates(&db, fetched)?;
+    write_pending_experiments(&db, fetched)?;
 
     // Now, we come to get the stashed updates, and they should be
     // the same.
     let mut writer = db.write()?;
-    let pending = pop_pending_updates(&db, &mut writer)?;
+    let pending = read_and_remove_pending_experiments(&db, &mut writer)?;
     writer.commit()?;
 
-    assert_eq!(pending.unwrap().get_experiments().len(), 1);
+    assert_eq!(pending.unwrap().len(), 1);
 
     // After we've fetched this once, we should have no pending
     // updates left.
     let mut writer = db.write()?;
-    let pending = pop_pending_updates(&db, &mut writer)?;
+    let pending = read_and_remove_pending_experiments(&db, &mut writer)?;
     writer.commit()?;
 
-    if let Some(_) = pending {
-        assert!(false, "No pending updates should be stashed");
-    }
+    assert!(pending.is_none(), "No pending updates should be stashed");
 
     Ok(())
 }

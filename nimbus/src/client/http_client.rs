@@ -17,8 +17,7 @@ use std::time::{Duration, Instant};
 
 use crate::config::RemoteSettingsConfig;
 use crate::error::{Error, Result};
-use crate::{Experiment, Experiments, SettingsClient, SCHEMA_VERSION};
-use std::convert::TryFrom;
+use crate::{Experiment, SettingsClient, SCHEMA_VERSION};
 use url::Url;
 use viaduct::{status_codes, Request, Response};
 
@@ -110,7 +109,7 @@ impl SettingsClient for Client {
         unimplemented!();
     }
 
-    fn fetch_experiments(&mut self) -> Result<Experiments> {
+    fn fetch_experiments(&mut self) -> Result<Vec<Experiment>> {
         let path = format!(
             "buckets/{}/collections/{}/records",
             &self.bucket_name, &self.collection_name
@@ -120,54 +119,54 @@ impl SettingsClient for Client {
         // We first encode the response into a `serde_json::Value`
         // to allow us to deserialize each experiment individually,
         // omitting any malformed experiments
-        let resp = self.make_request(req)?.json::<serde_json::Value>()?;
-        let res = Experiments::try_from(resp)?;
-        Ok(res)
+        let resp = self.make_request(req)?;
+        let string = resp.text();
+
+        parse_experiments(&string)
     }
 }
 
-impl TryFrom<serde_json::Value> for Experiments {
-    type Error = crate::error::Error;
-    fn try_from(value: serde_json::Value) -> Result<Self> {
-        let data = value.get("data").ok_or(Error::InvalidExperimentResponse)?;
-        let mut res = Vec::new();
-        for exp in data.as_array().ok_or(Error::InvalidExperimentResponse)? {
-            // Validate the schema major version matches the supported version
-            let exp_schema_version = match exp.get("schemaVersion") {
-                Some(ver) => serde_json::from_value::<String>(ver.to_owned())
-                    .unwrap_or_else(|_| "".to_string()),
-                None => {
-                    log::trace!("Missing schemaVersion: {:#?}", exp);
-                    continue;
-                }
-            };
-            let schema_maj_version = exp_schema_version.split('.').next().unwrap_or("");
-            // While "0" is a valid schema version, we have already passed that so reserving zero as
-            // a special value here in order to avoid a panic, and just ignore the experiment.
-            let schema_version: u32 = schema_maj_version.parse().unwrap_or(0);
-            if schema_version != SCHEMA_VERSION {
-                log::info!(
+pub fn parse_experiments(payload: &str) -> Result<Vec<Experiment>> {
+    let value: serde_json::Value = serde_json::from_str(payload)?;
+    let data = value.get("data").ok_or(Error::InvalidExperimentFormat)?;
+    let mut res = Vec::new();
+    for exp in data.as_array().ok_or(Error::InvalidExperimentFormat)? {
+        // Validate the schema major version matches the supported version
+        let exp_schema_version = match exp.get("schemaVersion") {
+            Some(ver) => {
+                serde_json::from_value::<String>(ver.to_owned()).unwrap_or_else(|_| "".to_string())
+            }
+            None => {
+                log::trace!("Missing schemaVersion: {:#?}", exp);
+                continue;
+            }
+        };
+        let schema_maj_version = exp_schema_version.split('.').next().unwrap_or("");
+        // While "0" is a valid schema version, we have already passed that so reserving zero as
+        // a special value here in order to avoid a panic, and just ignore the experiment.
+        let schema_version: u32 = schema_maj_version.parse().unwrap_or(0);
+        if schema_version != SCHEMA_VERSION {
+            log::info!(
                     "Schema version mismatch: Expected version {}, discarding experiment with version {}",
                     SCHEMA_VERSION, schema_version
                 );
-                // Schema version mismatch
-                continue;
-            }
+            // Schema version mismatch
+            continue;
+        }
 
-            match serde_json::from_value::<Experiment>(exp.clone()) {
-                Ok(exp) => res.push(exp),
-                Err(e) => {
-                    log::trace!("Malformed experiment data: {:#?}", exp);
-                    log::warn!(
-                        "Malformed experiment found! Experiment {},  Error: {}",
-                        exp.get("id").unwrap_or(&serde_json::json!("ID_NOT_FOUND")),
-                        e
-                    );
-                }
+        match serde_json::from_value::<Experiment>(exp.clone()) {
+            Ok(exp) => res.push(exp),
+            Err(e) => {
+                log::trace!("Malformed experiment data: {:#?}", exp);
+                log::warn!(
+                    "Malformed experiment found! Experiment {},  Error: {}",
+                    exp.get("id").unwrap_or(&serde_json::json!("ID_NOT_FOUND")),
+                    e
+                );
             }
         }
-        Ok(Self::new(res))
     }
+    Ok(res)
 }
 
 #[cfg(test)]
@@ -266,7 +265,7 @@ mod tests {
         };
         let mut http_client = Client::new(config).unwrap();
         let resp = http_client.fetch_experiments().unwrap();
-        let resp = resp.get_experiments();
+
         m.expect(1).assert();
         assert_eq!(resp.len(), 1);
         let exp = &resp[0];

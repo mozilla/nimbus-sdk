@@ -109,7 +109,7 @@ mod test {
         if first_run {
             client.set_experiments_locally(initial_experiments())?;
         }
-        client.apply_pending_updates()?;
+        client.apply_pending_experiments()?;
         client.fetch_experiments()?;
         Ok(())
     }
@@ -125,7 +125,7 @@ mod test {
         assert_eq!(experiments.len(), 0);
 
         // Now, the app chooses when to apply the pending updates to the experiments.
-        let events: Vec<_> = client.apply_pending_updates()?;
+        let events: Vec<_> = client.apply_pending_experiments()?;
         assert_eq!(events.len(), 1);
 
         let experiments = client.get_all_experiments()?;
@@ -134,7 +134,7 @@ mod test {
 
         // Next time we start the app, we immediately apply pending updates,
         // but there may not be any waiting.
-        let events: Vec<_> = client.apply_pending_updates()?;
+        let events: Vec<_> = client.apply_pending_experiments()?;
         // No change events
         assert_eq!(events.len(), 0);
 
@@ -161,13 +161,13 @@ mod test {
         client.set_experiments_locally(initial_experiments())?;
         assert_experiment_count(&client, 0)?;
 
-        client.apply_pending_updates()?;
+        client.apply_pending_experiments()?;
         assert_experiment_count(&client, 2)?;
 
         client.set_experiments_locally(no_experiments())?;
         assert_experiment_count(&client, 2)?;
 
-        client.apply_pending_updates()?;
+        client.apply_pending_experiments()?;
         assert_experiment_count(&client, 0)?;
 
         Ok(())
@@ -185,7 +185,7 @@ mod test {
         assert_eq!(experiments[1].slug, "startup-gold");
 
         // The app is at a safe place to change all the experiments.
-        client.apply_pending_updates()?;
+        client.apply_pending_experiments()?;
         let experiments = client.get_all_experiments()?;
         assert_eq!(experiments.len(), 1);
         assert_eq!(experiments[0].slug, "secure-gold");

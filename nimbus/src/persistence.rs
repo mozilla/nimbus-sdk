@@ -186,6 +186,11 @@ impl Database {
                 self.enrollment_store.clear(&mut writer)?;
             }
         }
+        // It is safe to clear the update store (i.e. the pending experiments) on all schema upgrades
+        // as it will be re-filled from the server on the next `fetch_experiments()`.
+        // The current contents of the update store may cause experiments to not load, or worse,
+        // accidentally unenrol.
+        self.updates_store.clear(&mut writer)?;
         self.meta_store
             .put(&mut writer, DB_KEY_DB_VERSION, &DB_VERSION)?;
         writer.commit()?;
