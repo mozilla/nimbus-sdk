@@ -299,7 +299,7 @@ mod tests {
             },
         ];
         // 299eed1e-be6d-457d-9e53-da7b1a03f10d maps to the second index
-        let id = uuid::Uuid::parse_str("299eed1e-be6d-457d-9e53-da7b1a03f10d").unwrap();
+        let id = uuid::Uuid::parse_str("3d2142de-53bf-2d48-a92d-45fb7036cbf6").unwrap();
         let b = choose_branch(slug, &branches, &id.to_string()).unwrap();
         assert_eq!(b.slug, "blue");
         // 542213c0-9aef-47eb-bc6b-3b8529736ba2 maps to the first index
