@@ -17,13 +17,13 @@ pub use evaluator::evaluate_enrollment;
 
 use client::{create_client, parse_experiments, SettingsClient};
 pub use config::RemoteSettingsConfig;
+pub use enrollment::EnrollmentStatus;
 use enrollment::{
     get_enrollments, get_global_user_participation, opt_in_with_branch, opt_out,
     set_global_user_participation, EnrollmentChangeEvent, EnrollmentChangeEventType,
     EnrollmentsEvolver,
 };
 pub use matcher::AppContext;
-pub use enrollment::EnrollmentStatus;
 use once_cell::sync::OnceCell;
 use persistence::{Database, StoreId};
 use serde_derive::*;

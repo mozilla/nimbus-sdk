@@ -5,7 +5,8 @@
 use clap::{App, Arg, SubCommand};
 use env_logger::Env;
 use nimbus::{
-    error::Result, AppContext, AvailableRandomizationUnits, NimbusClient, RemoteSettingsConfig, EnrollmentStatus
+    error::Result, AppContext, AvailableRandomizationUnits, EnrollmentStatus, NimbusClient,
+    RemoteSettingsConfig,
 };
 use std::collections::HashMap;
 use std::io::prelude::*;
@@ -344,8 +345,7 @@ fn main() -> Result<()> {
                 // options.
                 let uuid = uuid::Uuid::new_v4();
                 let aru = AvailableRandomizationUnits::with_client_id(&client_id);
-                let enrollment =
-                    nimbus::evaluate_enrollment(&uuid, &aru, &context.clone(), &exp)?;
+                let enrollment = nimbus::evaluate_enrollment(&uuid, &aru, &context.clone(), &exp)?;
                 let key = match enrollment.status.clone() {
                     EnrollmentStatus::Enrolled { .. } => "Enrolled",
                     EnrollmentStatus::NotEnrolled { .. } => "NotEnrolled",
@@ -353,10 +353,7 @@ fn main() -> Result<()> {
                     EnrollmentStatus::WasEnrolled { .. } => "WasEnrolled",
                     EnrollmentStatus::Error { .. } => "Error",
                 };
-                results.insert(
-                    key.clone(),
-                    results.get(&key).unwrap_or(&0) + 1,
-                );
+                results.insert(key.clone(), results.get(&key).unwrap_or(&0) + 1);
             }
             println!("Results: {:#?}", results);
         }
