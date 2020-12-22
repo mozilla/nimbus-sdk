@@ -23,6 +23,7 @@ use enrollment::{
     EnrollmentsEvolver,
 };
 pub use matcher::AppContext;
+pub use enrollment::EnrollmentStatus;
 use once_cell::sync::OnceCell;
 use persistence::{Database, StoreId};
 use serde_derive::*;
