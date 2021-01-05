@@ -64,8 +64,16 @@ fn main() -> Result<()> {
                 .about("Show all experiments, followed by the enrolled experiments"),
         )
         .subcommand(
+            SubCommand::with_name("fetch-experiments")
+            .about("Fetch experiments from the server. Subsequent calls to apply-pending-experiments will change enrolments."),
+        )
+        .subcommand(
+            SubCommand::with_name("apply-pending-experiments")
+            .about("Updates enrollments with the experiments last fetched from the server with fetch-experiments"),
+        )
+        .subcommand(
             SubCommand::with_name("update-experiments")
-            .about("Updates experiments and enrollments from the server"),
+            .about("Equivalent to fetch-experiments and apply-pending-experiments together"),
         )
         .subcommand(
             SubCommand::with_name("opt-in")
@@ -224,9 +232,19 @@ fn main() -> Result<()> {
                     )
                 });
         }
+        ("fetch-experiments", _) => {
+            println!("======================================");
+            println!("Fetching experiments");
+            nimbus_client.fetch_experiments()?;
+        }
+        ("apply-pending-experiments", _) => {
+            println!("======================================");
+            println!("Applying pending experiments");
+            nimbus_client.apply_pending_experiments()?;
+        }
         ("update-experiments", _) => {
             println!("======================================");
-            println!("Updating experiments");
+            println!("Fetching and applying experiments");
             nimbus_client.fetch_experiments()?;
             nimbus_client.apply_pending_experiments()?;
         }

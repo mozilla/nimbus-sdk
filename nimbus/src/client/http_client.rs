@@ -116,17 +116,15 @@ impl SettingsClient for Client {
         );
         let url = self.base_url.join(&path)?;
         let req = Request::get(url);
-        // We first encode the response into a `serde_json::Value`
-        // to allow us to deserialize each experiment individually,
-        // omitting any malformed experiments
         let resp = self.make_request(req)?;
-        let string = resp.text();
-
-        parse_experiments(&string)
+        parse_experiments(&resp.text())
     }
 }
 
 pub fn parse_experiments(payload: &str) -> Result<Vec<Experiment>> {
+    // We first encode the response into a `serde_json::Value`
+    // to allow us to deserialize each experiment individually,
+    // omitting any malformed experiments
     let value: serde_json::Value = serde_json::from_str(payload)?;
     let data = value.get("data").ok_or(Error::InvalidExperimentFormat)?;
     let mut res = Vec::new();

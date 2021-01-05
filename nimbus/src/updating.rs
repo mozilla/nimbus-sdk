@@ -26,13 +26,20 @@ pub fn read_and_remove_pending_experiments(
     let store = db.get_store(StoreId::Updates);
     let experiments = store.get::<Vec<Experiment>>(writer, KEY_PENDING_UPDATES)?;
 
+    // Only clear the store if there's updates available.
+    // If we're accidentally called from the main thread,
+    // we don't want to be writing unless we absolutely have to.
     if experiments.is_some() {
         store.clear(writer)?;
     }
 
+    // An empty Some(vec![]) is "updates of an empty list" i.e. unenrolling from all experiments
+    // None is "there are no pending updates".
     Ok(experiments)
 }
 
+// This test crashes lmdb for reasons that make no sense, so only run it
+// in the "safe mode" backend.
 #[cfg(feature = "rkv-safe-mode")]
 #[test]
 fn test_reading_writing_and_removing_experiments() -> Result<()> {
