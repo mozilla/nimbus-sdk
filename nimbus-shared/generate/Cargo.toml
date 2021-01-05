@@ -1,0 +1,11 @@
+[package]
+name = "generate"
+version = "0.1.0"
+authors = []
+# This is just for circle, so does not need to be published
+publish = false
+
+[dependencies]
+schemars = "0.8.0"
+serde_json = "1.0"
+nimbus_shared = { path = ".." }
