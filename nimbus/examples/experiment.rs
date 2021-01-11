@@ -353,7 +353,7 @@ fn main() -> Result<()> {
                     EnrollmentStatus::WasEnrolled { .. } => "WasEnrolled",
                     EnrollmentStatus::Error { .. } => "Error",
                 };
-                results.insert(key.clone(), results.get(&key).unwrap_or(&0) + 1);
+                results.insert(key, results.get(&key).unwrap_or(&0) + 1);
             }
             println!("Results: {:#?}", results);
         }
