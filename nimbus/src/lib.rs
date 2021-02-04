@@ -105,6 +105,21 @@ impl NimbusClient {
             .ok_or(Error::NoSuchExperiment(slug))?)
     }
 
+
+    // Note: the contract for this function is that it never blocks on IO.
+    pub fn get_branch_slug_for_feature(&self, feature_id: String) -> Result<Option<String>> {
+        self.database_cache.get_branch_slug_by_feature(&feature_id)
+    }
+
+    pub fn get_branches_for_feature(&self, feature_id: String) -> Result<Vec<Branch>> {
+        Ok(self
+            .get_all_experiments()?
+            .iter()
+            .find(|e| e.feature_id == feature_id)
+            .map(|e| e.branches.clone())
+            .ok_or(Error::NoSuchExperiment(feature_id))?)
+    }
+
     pub fn get_global_user_participation(&self) -> Result<bool> {
         let db = self.db()?;
         let reader = db.read()?;
@@ -292,6 +307,7 @@ impl NimbusClient {
 
 #[derive(Debug, Clone)]
 pub struct EnrolledExperiment {
+    pub feature_id: String,
     pub slug: String,
     pub user_facing_name: String,
     pub user_facing_description: String,
@@ -318,6 +334,7 @@ pub struct Experiment {
     pub bucket_config: BucketConfig,
     pub probe_sets: Vec<String>,
     pub branches: Vec<Branch>,
+    pub feature_id: String,
     pub targeting: Option<String>,
     pub start_date: Option<String>, // TODO: Use a date format here
     pub end_date: Option<String>,   // TODO: Use a date format here
@@ -427,6 +444,7 @@ mod tests {
         let mock_client_id = "client-1".to_string();
         let mock_exp_slug = "exp-1".to_string();
         let mock_exp_branch = "branch-1".to_string();
+        let mock_feature_id = "feature-1".to_string();
 
         let tmp_dir = TempDir::new("test_telemetry_reset")?;
         let client = NimbusClient::new(

@@ -16,7 +16,8 @@ use std::sync::RwLock;
 // This struct is the cached data. This is never mutated, but instead
 // recreated every time the cache is updated.
 struct CachedData {
-    pub experiment_branches: HashMap<String, String>,
+    pub branches_by_exp: HashMap<String, String>,
+    pub branches_by_feature: HashMap<String, String>,
 }
 
 // This is the public cache API. Each NimbusClient can create one of these and
@@ -43,14 +44,21 @@ impl DatabaseCache {
         // By passing in the active `writer` we read the state of enrollments
         // as written by the calling code, before it's committed to the db.
         let experiments = get_enrollments(&db, &writer)?;
+
         // Build the new hashmap.
         let mut eb = HashMap::with_capacity(experiments.len());
+        let mut exp_features = HashMap::with_capacity(experiments.len());
+
         for e in experiments {
-            eb.insert(e.slug, e.branch_slug);
+            eb.insert(e.slug, e.branch_slug.clone());
+            exp_features.insert(e.feature_id, e.branch_slug);
         }
+
         let data = CachedData {
-            experiment_branches: eb,
+            branches_by_exp: eb,
+            branches_by_feature: exp_features,
         };
+
         // Try to commit the change to disk and update the cache as close
         // together in time as possible. This leaves a small window where another
         // thread could read new data from disk but see old data in the cache,
@@ -85,6 +93,10 @@ impl DatabaseCache {
     }
 
     pub fn get_experiment_branch(&self, slug: &str) -> Result<Option<String>> {
-        self.get_data(|data| data.experiment_branches.get(slug).cloned())
+        self.get_data(|data| data.branches_by_exp.get(slug).cloned())
+    }
+
+    pub fn get_branch_slug_by_feature(&self, feature_id: &str) -> Result<Option<String>> {
+        self.get_data(|data| data.branches_by_feature.get(feature_id).cloned())
     }
 }

@@ -110,7 +110,7 @@ impl ExperimentEnrollment {
         }
         let enrollment = Self {
             slug: experiment.slug.clone(),
-            status: EnrollmentStatus::new_enrolled(EnrolledReason::OptIn, branch_slug),
+            status: EnrollmentStatus::new_enrolled(EnrolledReason::OptIn, branch_slug, &experiment.feature_id,)
         };
         out_enrollment_events.push(enrollment.get_change_event());
         Ok(enrollment)
@@ -412,6 +412,7 @@ pub enum EnrollmentStatus {
         enrollment_id: Uuid, // Random ID used for telemetry events correlation.
         reason: EnrolledReason,
         branch: String,
+        feature_id: String
     },
     NotEnrolled {
         reason: NotEnrolledReason,
@@ -435,8 +436,9 @@ pub enum EnrollmentStatus {
 }
 
 impl EnrollmentStatus {
-    pub fn new_enrolled(reason: EnrolledReason, branch: &str) -> Self {
+    pub fn new_enrolled(reason: EnrolledReason, branch: &str, feature_id: &str) -> Self {
         EnrollmentStatus::Enrolled {
+            feature_id: feature_id.to_owned(),
             reason,
             branch: branch.to_owned(),
             enrollment_id: Uuid::new_v4(),
@@ -485,6 +487,7 @@ pub fn get_enrollments<'r>(
         if let EnrollmentStatus::Enrolled {
             branch,
             enrollment_id,
+            feature_id,
             ..
         } = &enrollment.status
         {
@@ -493,6 +496,7 @@ pub fn get_enrollments<'r>(
                 .get::<Experiment, _>(reader, &enrollment.slug)?
             {
                 result.push(EnrolledExperiment {
+                    feature_id: feature_id.to_string(),
                     slug: experiment.slug,
                     user_facing_name: experiment.user_facing_name,
                     user_facing_description: experiment.user_facing_description,

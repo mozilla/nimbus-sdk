@@ -85,6 +85,7 @@ pub fn evaluate_enrollment(
                         EnrollmentStatus::new_enrolled(
                             EnrolledReason::Qualified,
                             &choose_branch(&exp.slug, &exp.branches, &id)?.clone().slug,
+                            &exp.feature_id,
                         )
                     } else {
                         EnrollmentStatus::NotEnrolled {
