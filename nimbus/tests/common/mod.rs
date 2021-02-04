@@ -39,8 +39,23 @@ pub fn initial_test_experiments() -> String {
                 "slug": "startup-gold",
                 "endDate": null,
                 "branches":[
-                    {"slug": "control", "ratio": 1},
-                    {"slug": "treatment","ratio":1}
+                    {
+                        "slug": "control",
+                        "ratio": 1,
+                        "feature": {
+                            "feature_id": "aboutwelcome",
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "slug": "treatment",
+                        "ratio":1,
+                        "feature": {
+                            "feature_id": "aboutwelcome",
+                            "enabled": true
+                        },
+
+                    }
                 ],
                 "probeSets":[],
                 "startDate":null,
