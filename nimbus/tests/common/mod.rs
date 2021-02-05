@@ -38,13 +38,13 @@ pub fn initial_test_experiments() -> String {
                 "schemaVersion": "1.0.0",
                 "slug": "startup-gold",
                 "endDate": null,
-                "featureIds": ["aboutwelcome"],
+                "featureIds": ["aboutmonkeys"],
                 "branches":[
                     {
                         "slug": "control",
                         "ratio": 1,
                         "feature": {
-                            "featureId": "aboutwelcome",
+                            "featureId": "aboutmonkeys",
                             "enabled": false
                         }
                     },
@@ -52,7 +52,7 @@ pub fn initial_test_experiments() -> String {
                         "slug": "treatment",
                         "ratio":1,
                         "feature": {
-                            "featureId": "aboutwelcome",
+                            "featureId": "aboutmonkeys",
                             "enabled": true
                         },
 
