@@ -115,7 +115,7 @@ impl NimbusClient {
         Ok(self
             .get_all_experiments()?
             .iter()
-            .find(|e| e.feature_id == feature_id)
+            .find(|e| e.feature_ids == vec![feature_id.to_owned()])
             .map(|e| e.branches.clone())
             .ok_or(Error::NoSuchExperiment(feature_id))?)
     }
@@ -334,7 +334,7 @@ pub struct Experiment {
     pub bucket_config: BucketConfig,
     pub probe_sets: Vec<String>,
     pub branches: Vec<Branch>,
-    pub feature_id: String,
+    pub feature_ids: Vec<String>,
     pub targeting: Option<String>,
     pub start_date: Option<String>, // TODO: Use a date format here
     pub end_date: Option<String>,   // TODO: Use a date format here
@@ -483,7 +483,7 @@ mod tests {
             &mock_exp_slug,
             &ExperimentEnrollment {
                 slug: mock_exp_slug.clone(),
-                status: EnrollmentStatus::new_enrolled(EnrolledReason::Qualified, &mock_exp_branch),
+                status: EnrollmentStatus::new_enrolled(EnrolledReason::Qualified, &mock_exp_branch, &mock_feature_id),
             },
         )?;
         writer.commit()?;

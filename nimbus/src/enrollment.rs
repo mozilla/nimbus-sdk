@@ -110,7 +110,7 @@ impl ExperimentEnrollment {
         }
         let enrollment = Self {
             slug: experiment.slug.clone(),
-            status: EnrollmentStatus::new_enrolled(EnrolledReason::OptIn, branch_slug, &experiment.feature_id,)
+            status: EnrollmentStatus::new_enrolled(EnrolledReason::OptIn, branch_slug, &experiment.feature_ids[0],)
         };
         out_enrollment_events.push(enrollment.get_change_event());
         Ok(enrollment)
@@ -804,9 +804,24 @@ mod tests {
                 "schemaVersion": "1.0.0",
                 "slug": "secure-gold",
                 "endDate": null,
+                "featureIds": ["some_control"],
                 "branches":[
-                    {"slug": "control", "ratio": 1},
-                    {"slug": "treatment","ratio":1}
+                    {
+                        "slug": "control",
+                        "ratio": 1,
+                        "feature": {
+                            "featureId": "some_control",
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "slug": "treatment",
+                        "ratio":1,
+                        "feature": {
+                            "featureId": "some_control",
+                            "enabled": true
+                        }
+                    }
                 ],
                 "probeSets":[],
                 "startDate":null,
@@ -833,9 +848,10 @@ mod tests {
                 "slug": "secure-silver",
                 "endDate": null,
                 "branches":[
-                    {"slug": "control", "ratio": 1},
-                    {"slug": "treatment","ratio":1}
+                    {"slug": "control", "ratio": 1}, // XXX add feature
+                    {"slug": "treatment","ratio":1}, // XXX add feature
                 ],
+                "featureIds": ["monkey"],
                 "probeSets":[],
                 "startDate":null,
                 "application":"fenix",
@@ -1088,7 +1104,8 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
-            },
+                feature_id: "some_switch".to_owned(),
+            }
         };
         let enrollment = evolver
             .evolve_enrollment(
@@ -1128,6 +1145,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1170,6 +1188,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1219,6 +1238,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1260,6 +1280,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1294,6 +1315,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1455,6 +1477,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = evolver
@@ -1673,6 +1696,7 @@ mod tests {
                 enrollment_id,
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
+                feature_id: "some_switch".to_owned(),
             },
         };
         let enrollment = existing_enrollment.on_explicit_opt_out(&mut events)?;
@@ -1981,6 +2005,7 @@ mod tests {
                 status: EnrollmentStatus::new_enrolled(
                     EnrolledReason::Qualified,
                     &mock_exp1_branch,
+                    "some_switch"
                 ),
             },
         )?;
