@@ -34,15 +34,17 @@ fn test_enrolled() -> Result<()> {
     // really exist.
     assert_eq!(
         client.get_branch_slug_for_feature("aboutwelcome".to_string())?,
-        None, "shouldn't return anything before pending experiments applied"
+        None,
+        "shouldn't return anything before pending experiments applied"
     );
 
     client.apply_pending_experiments()?;
 
     // aboutwelcome enrolls everyone - not clear what treatment though.
-    assert!(client
-        .get_branch_slug_for_feature("aboutwelcome".to_string())?
-        .is_some(),
+    assert!(
+        client
+            .get_branch_slug_for_feature("aboutwelcome".to_string())?
+            .is_some(),
         "should return a branch for an exp that enrolls everyone"
     );
 

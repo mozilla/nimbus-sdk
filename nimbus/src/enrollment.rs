@@ -110,7 +110,11 @@ impl ExperimentEnrollment {
         }
         let enrollment = Self {
             slug: experiment.slug.clone(),
-            status: EnrollmentStatus::new_enrolled(EnrolledReason::OptIn, branch_slug, &experiment.feature_ids[0],)
+            status: EnrollmentStatus::new_enrolled(
+                EnrolledReason::OptIn,
+                branch_slug,
+                &experiment.feature_ids[0],
+            ),
         };
         out_enrollment_events.push(enrollment.get_change_event());
         Ok(enrollment)
@@ -412,7 +416,7 @@ pub enum EnrollmentStatus {
         enrollment_id: Uuid, // Random ID used for telemetry events correlation.
         reason: EnrolledReason,
         branch: String,
-        feature_id: String
+        feature_id: String,
     },
     NotEnrolled {
         reason: NotEnrolledReason,
@@ -1105,7 +1109,7 @@ mod tests {
                 branch: "control".to_owned(),
                 reason: EnrolledReason::Qualified,
                 feature_id: "some_switch".to_owned(),
-            }
+            },
         };
         let enrollment = evolver
             .evolve_enrollment(
@@ -2005,7 +2009,7 @@ mod tests {
                 status: EnrollmentStatus::new_enrolled(
                     EnrolledReason::Qualified,
                     &mock_exp1_branch,
-                    "some_switch"
+                    "some_switch",
                 ),
             },
         )?;

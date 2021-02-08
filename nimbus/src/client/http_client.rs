@@ -313,8 +313,8 @@ mod tests {
                         slug: "control".to_string(),
                         ratio: 1,
                         feature: Some(FeatureConfig {
-                             feature_id: "first_switch".to_string(),
-                             enabled: false,
+                            feature_id: "first_switch".to_string(),
+                            enabled: false,
                         }),
                     },
                     Branch {

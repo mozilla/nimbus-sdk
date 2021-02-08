@@ -105,7 +105,6 @@ impl NimbusClient {
             .ok_or(Error::NoSuchExperiment(slug))?)
     }
 
-
     // Note: the contract for this function is that it never blocks on IO.
     pub fn get_branch_slug_for_feature(&self, feature_id: String) -> Result<Option<String>> {
         self.database_cache.get_branch_slug_by_feature(&feature_id)
@@ -483,7 +482,11 @@ mod tests {
             &mock_exp_slug,
             &ExperimentEnrollment {
                 slug: mock_exp_slug.clone(),
-                status: EnrollmentStatus::new_enrolled(EnrolledReason::Qualified, &mock_exp_branch, &mock_feature_id),
+                status: EnrollmentStatus::new_enrolled(
+                    EnrolledReason::Qualified,
+                    &mock_exp_branch,
+                    &mock_feature_id,
+                ),
             },
         )?;
         writer.commit()?;
