@@ -92,8 +92,11 @@ impl DatabaseCache {
         }
     }
 
-    pub fn get_experiment_branch(&self, slug: &str) -> Result<Option<String>> {
-        self.get_data(|data| data.branches_by_experiment.get(slug).cloned())
+    pub fn get_experiment_branch(&self, id: &str) -> Result<Option<String>> {
+        self.get_data(|data| match data.branches_by_feature.get(id) {
+            None => data.branches_by_experiment.get(id).cloned(),
+            Some(branch_slug) => Some(branch_slug.to_owned()),
+        })
     }
 
     pub fn get_branch_slug_by_feature(&self, feature_id: &str) -> Result<Option<String>> {
