@@ -98,8 +98,4 @@ impl DatabaseCache {
             Some(branch_slug) => Some(branch_slug.to_owned()),
         })
     }
-
-    pub fn get_branch_slug_by_feature(&self, feature_id: &str) -> Result<Option<String>> {
-        self.get_data(|data| data.branches_by_feature.get(feature_id).cloned())
-    }
 }

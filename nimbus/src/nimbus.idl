@@ -104,12 +104,6 @@ interface NimbusClient {
     [Throws=Error]
     sequence<Branch> get_experiment_branches(string experiment_slug);
 
-    // Returns the branch allocated for a given experiment ID. Returns null
-    // if the user is not enrolled in the specified experiment or if the
-    // specified experiment does not exist.
-    [Throws=Error]
-    string? get_branch_slug_for_feature(string feature_id);
-
     // Returns a list of experiments this user is enrolled in.
     [Throws=Error]
     sequence<EnrolledExperiment> get_active_experiments();
