@@ -16,7 +16,7 @@ use std::sync::RwLock;
 // This struct is the cached data. This is never mutated, but instead
 // recreated every time the cache is updated.
 struct CachedData {
-    pub branches_by_exp: HashMap<String, String>,
+    pub branches_by_experiment: HashMap<String, String>,
     pub branches_by_feature: HashMap<String, String>,
 }
 
@@ -45,18 +45,18 @@ impl DatabaseCache {
         // as written by the calling code, before it's committed to the db.
         let experiments = get_enrollments(&db, &writer)?;
 
-        // Build the new hashmap.
-        let mut eb = HashMap::with_capacity(experiments.len());
-        let mut exp_features = HashMap::with_capacity(experiments.len());
+        // Build the new hashmaps
+        let mut branches_by_experiment = HashMap::with_capacity(experiments.len());
+        let mut branches_by_feature = HashMap::with_capacity(experiments.len());
 
         for e in experiments {
-            eb.insert(e.slug, e.branch_slug.clone());
-            exp_features.insert(e.feature_id, e.branch_slug);
+            branches_by_experiment.insert(e.slug, e.branch_slug.clone());
+            branches_by_feature.insert(e.feature_id, e.branch_slug);
         }
 
         let data = CachedData {
-            branches_by_exp: eb,
-            branches_by_feature: exp_features,
+            branches_by_experiment,
+            branches_by_feature,
         };
 
         // Try to commit the change to disk and update the cache as close
@@ -93,7 +93,7 @@ impl DatabaseCache {
     }
 
     pub fn get_experiment_branch(&self, slug: &str) -> Result<Option<String>> {
-        self.get_data(|data| data.branches_by_exp.get(slug).cloned())
+        self.get_data(|data| data.branches_by_experiment.get(slug).cloned())
     }
 
     pub fn get_branch_slug_by_feature(&self, feature_id: &str) -> Result<Option<String>> {
