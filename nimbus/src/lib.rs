@@ -110,15 +110,6 @@ impl NimbusClient {
         self.database_cache.get_branch_slug_by_feature(&feature_id)
     }
 
-    pub fn get_branches_for_feature(&self, feature_id: String) -> Result<Vec<Branch>> {
-        Ok(self
-            .get_all_experiments()?
-            .iter()
-            .find(|e| e.feature_ids == vec![feature_id.to_owned()])
-            .map(|e| e.branches.clone())
-            .ok_or(Error::NoSuchExperiment(feature_id))?)
-    }
-
     pub fn get_global_user_participation(&self) -> Result<bool> {
         let db = self.db()?;
         let reader = db.read()?;

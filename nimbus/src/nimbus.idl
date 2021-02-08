@@ -108,10 +108,6 @@ interface NimbusClient {
     [Throws=Error]
     string? get_branch_slug_for_feature(string feature_id);
 
-    // Returns a list of experiment branches for a given experiment ID.
-    [Throws=Error]
-    sequence<Branch> get_branches_for_feature(string featured_id);
-
     // Returns a list of experiments this user is enrolled in.
     [Throws=Error]
     sequence<EnrolledExperiment> get_active_experiments();
