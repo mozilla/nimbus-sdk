@@ -18,7 +18,10 @@ fn test_feature_before_open() -> Result<()> {
     ));
     // now initialize the DB - it should start working (and report no branch)
     client.initialize()?;
-    assert_eq!(client.get_experiment_branch("not_there_feature".to_string())?, None);
+    assert_eq!(
+        client.get_experiment_branch("not_there_feature".to_string())?,
+        None
+    );
     Ok(())
 }
 
