@@ -9,24 +9,24 @@ use nimbus::error::{Error, Result};
 
 #[cfg(feature = "rkv-safe-mode")]
 #[test]
-fn test_before_open() -> Result<()> {
+fn test_feature_before_open() -> Result<()> {
     let _ = env_logger::try_init();
-    let client = common::new_test_client("test_before_open")?;
+    let client = common::new_test_client("test_feature_before_open")?;
     assert!(matches!(
-        client.get_experiment_branch("foo".to_string()),
+        client.get_experiment_branch("not_there_feature".to_string()),
         Err(Error::DatabaseNotReady)
     ));
     // now initialize the DB - it should start working (and report no branch)
     client.initialize()?;
-    assert_eq!(client.get_experiment_branch("foo".to_string())?, None);
+    assert_eq!(client.get_experiment_branch("not_there_feature".to_string())?, None);
     Ok(())
 }
 
 #[cfg(feature = "rkv-safe-mode")]
 #[test]
-fn test_enrolled() -> Result<()> {
+fn test_enrolled_feature() -> Result<()> {
     let _ = env_logger::try_init();
-    let client = common::new_test_client("test_before_open")?;
+    let client = common::new_test_client("test_enrolled_feature")?;
     client.initialize()?;
     client.set_experiments_locally(common::initial_test_experiments())?;
 

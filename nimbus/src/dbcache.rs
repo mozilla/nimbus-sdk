@@ -45,7 +45,12 @@ impl DatabaseCache {
         // as written by the calling code, before it's committed to the db.
         let experiments = get_enrollments(&db, &writer)?;
 
-        // Build the new hashmaps
+        // Build the new hashmaps.  Note that this is somewhat temporary, is
+        // likely to change when the full FeatureConfig stuff is implemented.
+        // Further, note that, for the moment, we only (currently) support
+        // one feature_id per experiment, meaning that we ignore everything
+        // except the first feature_id in the array.  Some of the multi-feature
+        // code may want to live in the EnrollmentEvolver.
         let mut branches_by_experiment = HashMap::with_capacity(experiments.len());
         let mut branches_by_feature = HashMap::with_capacity(experiments.len());
 

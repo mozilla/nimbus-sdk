@@ -440,6 +440,8 @@ pub enum EnrollmentStatus {
 }
 
 impl EnrollmentStatus {
+    // Note that for now, we only support a single feature_id per experiment,
+    // so this code is expected to shift once we start supporting multiple.
     pub fn new_enrolled(reason: EnrolledReason, branch: &str, feature_id: &str) -> Self {
         EnrollmentStatus::Enrolled {
             feature_id: feature_id.to_owned(),
