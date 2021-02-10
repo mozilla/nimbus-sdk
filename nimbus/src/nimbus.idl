@@ -94,7 +94,7 @@ interface NimbusClient {
 
     // Returns the branch allocated for a given feature_id or experiment_slug.
     // Search first by feature_id, then by experiment_slug, returning the
-    // the first hit. If the user is enrolled neither in an experiement with id
+    // the first hit. If the user is enrolled neither in an experiment with id
     // as the feature_id nor with id as the experiment_slug for the feature,
     // null is returned.
     [Throws=Error]
