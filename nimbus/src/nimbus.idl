@@ -14,7 +14,7 @@ dictionary AppContext {
 };
 
 dictionary EnrolledExperiment {
-    string feature_id;
+    sequence<string> feature_ids;
     string slug;
     string user_facing_name;
     string user_facing_description;

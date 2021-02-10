@@ -500,7 +500,7 @@ pub fn get_enrollments<'r>(
                 .get::<Experiment, _>(reader, &enrollment.slug)?
             {
                 result.push(EnrolledExperiment {
-                    feature_id: feature_id.to_string(),
+                    feature_ids: vec![feature_id.to_string()],
                     slug: experiment.slug,
                     user_facing_name: experiment.user_facing_name,
                     user_facing_description: experiment.user_facing_description,

@@ -292,7 +292,7 @@ impl NimbusClient {
 
 #[derive(Debug, Clone)]
 pub struct EnrolledExperiment {
-    pub feature_id: String,
+    pub feature_ids: Vec<String>,
     pub slug: String,
     pub user_facing_name: String,
     pub user_facing_description: String,

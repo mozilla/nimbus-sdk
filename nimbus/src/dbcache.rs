@@ -51,7 +51,7 @@ impl DatabaseCache {
 
         for e in experiments {
             branches_by_experiment.insert(e.slug, e.branch_slug.clone());
-            branches_by_feature.insert(e.feature_id, e.branch_slug);
+            branches_by_feature.insert(e.feature_ids[0].clone(), e.branch_slug);
         }
 
         let data = CachedData {
