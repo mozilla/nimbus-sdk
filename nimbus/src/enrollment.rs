@@ -113,7 +113,7 @@ impl ExperimentEnrollment {
             status: EnrollmentStatus::new_enrolled(
                 EnrolledReason::OptIn,
                 branch_slug,
-                &experiment.feature_ids[0],
+                &experiment.get_first_feature_id(),
             ),
         };
         out_enrollment_events.push(enrollment.get_change_event());
