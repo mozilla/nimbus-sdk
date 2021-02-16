@@ -373,9 +373,13 @@ mod tests {
         let enrollment =
             evaluate_enrollment(&id, &available_randomization_units, &context, &experiment1)
                 .unwrap();
-        assert!(
-            matches!(enrollment.status, EnrollmentStatus::Enrolled { reason: EnrolledReason::Qualified, .. })
-        );
+        assert!(matches!(
+            enrollment.status,
+            EnrollmentStatus::Enrolled {
+                reason: EnrolledReason::Qualified,
+                ..
+            }
+        ));
 
         let enrollment =
             evaluate_enrollment(&id, &available_randomization_units, &context, &experiment2)
@@ -400,8 +404,12 @@ mod tests {
         let enrollment =
             evaluate_enrollment(&id, &available_randomization_units, &context, &experiment2)
                 .unwrap();
-        assert!(
-            matches!(enrollment.status, EnrollmentStatus::Enrolled { reason: EnrolledReason::Qualified, .. })
-        );
+        assert!(matches!(
+            enrollment.status,
+            EnrollmentStatus::Enrolled {
+                reason: EnrolledReason::Qualified,
+                ..
+            }
+        ));
     }
 }
