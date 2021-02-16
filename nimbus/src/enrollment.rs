@@ -267,6 +267,7 @@ impl ExperimentEnrollment {
     }
 
     /// Force unenroll ourselves from an experiment.
+    #[allow(clippy::unnecessary_wraps)]
     fn on_explicit_opt_out(
         &self,
         out_enrollment_events: &mut Vec<EnrollmentChangeEvent>,
