@@ -28,7 +28,7 @@ fn test_enrolled() -> Result<()> {
     let _ = env_logger::try_init();
     let client = common::new_test_client("test_enrolled")?;
     client.initialize()?;
-    client.set_experiments_locally(common::initial_test_experiments())?;
+    client.set_experiments_locally(common::experiments_testing_feature_ids())?;
 
     let experiment_slugs = vec!["secure-gold", "no-features"];
     for experiment_slug in &experiment_slugs {

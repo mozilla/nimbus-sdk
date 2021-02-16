@@ -125,7 +125,7 @@ pub fn exactly_two_experiments() -> String {
 }
 
 #[allow(dead_code)] // not clear why this is necessary...
-pub fn initial_test_experiments() -> String {
+pub fn experiments_testing_feature_ids() -> String {
     use serde_json::json;
     json!({
         "data": [
