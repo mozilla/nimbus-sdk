@@ -6,7 +6,7 @@ mod dbcache;
 mod enrollment;
 pub mod error;
 mod evaluator;
-pub use error::{Error as NimbusError, Result};
+pub use error::{NimbusError, Result};
 mod client;
 mod config;
 mod matcher;
