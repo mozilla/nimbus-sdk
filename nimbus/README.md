@@ -1,17 +1,7 @@
-# Experiments SDK
+# Nimbus
 
-The `Experiments SDK` is an aspiring rapid experiments project.
-This library provides the core functionality to fetch experiments from Firefox Remote Settings,
-enroll users into those experiments and report experiment metrics through Glean.
+## 308 Permanent Redirect
 
-## Example
+Looking for Nimbus-SDK?  We have moved to [application-services](https://github.com/mozilla/application-services) in order to simply our release process.
 
-```
-cargo run --example experiment 
-```
-
-## License
-
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/
+This repo will be archived once we are sure everyone has found Nimbus' new home.
