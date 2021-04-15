@@ -1,5 +1,12 @@
-# nimbus-sdk [![CircleCI](https://circleci.com/gh/mozilla/nimbus-sdk/tree/main.svg?style=svg)](https://circleci.com/gh/mozilla/nimbus-sdk/tree/main)
+# nimbus-sdk
+
 Cross Platform Rapid Experiments "Nimbus" SDK
+
+## 308 Permanent Redirect
+
+Looking for Nimbus-SDK?  We have moved to [application-services](https://github.com/mozilla/application-services) in order to simply our release process.
+
+This repo will be archived once we are sure everyone has found Nimbus' new home.
 
 ## Changelog
 
